@@ -1,6 +1,6 @@
 ﻿## Define the trusted SSIDs where the VPN will not autoconnect
 
-$TrustedSSIDs = @("Dawnbreak Studio", "Dawnbreak")
+$TrustedSSIDs = @("SSID1", "SSID2")
 
 ## Define two variables: one for connecting, and one for disconnecting.
 
