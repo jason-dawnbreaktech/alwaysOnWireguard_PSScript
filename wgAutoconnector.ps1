@@ -5,12 +5,12 @@ $TrustedSSIDs = @("Dawnbreak Studio", "Dawnbreak")
 ## Define two variables: one for connecting, and one for disconnecting.
 
 $Connect = {
-& "C:\Program Files\WireGuard\wireguard.exe" /installtunnelservice "C:\Users\jc_al\OneDrive\Documents\WireguardConfigs\peer8\peer8.conf"
+& "C:\Program Files\WireGuard\wireguard.exe" /installtunnelservice "C:\path\to\config.conf"
 }
 
 
 $Disconnect = {
-& "C:\Program Files\WireGuard\wireguard.exe" /uninstalltunnelservice peer8
+& "C:\Program Files\WireGuard\wireguard.exe" /uninstalltunnelservice yourpeername
 }
 
 ## shows the current VPN interface
