@@ -1,16 +1,16 @@
 ﻿## Define the trusted SSIDs where the VPN will not autoconnect
 
-$TrustedSSIDs = @("SSID1", "SSID2")
+$TrustedSSIDs = @("Dawnbreak Studio", "Dawnbreak")
 
 ## Define two variables: one for connecting, and one for disconnecting.
 
 $Connect = {
-& "C:\Program Files\WireGuard\wireguard.exe" /installtunnelservice "C:\path\to\peer"
+& "C:\Program Files\WireGuard\wireguard.exe" /installtunnelservice "C:\Users\jc_al\OneDrive\Documents\WireguardConfigs\peer8\peer8.conf"
 }
 
 
 $Disconnect = {
-& "C:\Program Files\WireGuard\wireguard.exe" /uninstalltunnelservice yourpeername # use wgshow in command line with WG connected and note the interface name if you aren't sure.
+& "C:\Program Files\WireGuard\wireguard.exe" /uninstalltunnelservice peer8
 }
 
 ## shows the current VPN interface
@@ -19,10 +19,8 @@ function Is-VPNConnected {
    try {
       $VPNStatus = wg show
       if ($VPNStatus -ne $null) {
-      Write-Host "Currently connected to: $currentSSID"
       return $true
    } else {
-      Write-Host "VPN is not connected"
       return $false
       }
    }
@@ -61,10 +59,14 @@ function Disconnect-VPN {
 
 
 function Terminate-Program {
-    Write-Host "Disconnecting VPN..."
-    & $Disconnect
+    Write-Host "Terminating/Disconnecting VPN..."
+    if (Is-VPNConnected) {
+        Disconnect-VPN
+    }
+    exit
+}    
 
-}
+
          
 try {     
     while ($true) {
@@ -100,6 +102,5 @@ try {
 
      }
 } finally {
-    # Will disconnect the VPN when the script is exited
-    Disconnect-VPN
+    Write-Host "See you later :)"
 }
