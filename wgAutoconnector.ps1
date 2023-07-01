@@ -1,6 +1,6 @@
 ﻿## Define the trusted SSIDs where the VPN will not autoconnect
 
-$TrustedSSIDs = @("SSID1", "SSID2", "SSID3")
+$TrustedSSIDs = @("SSID1", "SSID2")
 
 ## Define two variables: one for connecting, and one for disconnecting.
 
@@ -10,7 +10,7 @@ $Connect = {
 
 
 $Disconnect = {
-& "C:\Program Files\WireGuard\wireguard.exe" /uninstalltunnelservice yourpeerhere
+& "C:\Program Files\WireGuard\wireguard.exe" /uninstalltunnelservice yourpeername # use wgshow in command line with WG connected and note the interface name if you aren't sure.
 }
 
 ## shows the current VPN interface
@@ -22,6 +22,7 @@ function Is-VPNConnected {
       Write-Host "Currently connected to: $currentSSID"
       return $true
    } else {
+      Write-Host "VPN is not connected"
       return $false
       }
    }
@@ -53,12 +54,36 @@ function Get-CurrentSSID {
     return $null
     }
 }
- 
-try {    
+
+function Disconnect-VPN {
+& $Disconnect
+}
+
+
+function Terminate-Program {
+    Write-Host "Disconnecting VPN..."
+    & $Disconnect
+
+}
+         
+try {     
     while ($true) {
+        # Clear the console before displaying updated information
+        Clear-Host
+        
         # Get current SSID
         $currentSSID = Get-CurrentSSID
         $isVPNConnected = Is-VPNConnected
+
+        # Display VPN Status and current SSID
+        Write-Host "VPN Status: $isVPNConnected"
+        Write-Host "Current SSID: $currentSSID"
+
+        # Check if the user wants to terminate the program by pressing the Escape key
+        Write-Host "Press 'ESC' key to terminate the program."
+        if ([System.Console]::KeyAvailable -and [System.Console]::ReadKey($true).Key -eq "Escape") {
+            Terminate-Program
+        }
 
         # If the current SSID is in trusted SSIDs and VPN is connected, disconnect: 
         if ($TrustedSSIDs -contains $currentSSID -and $isVPNConnected) {
@@ -69,12 +94,12 @@ try {
         elseif ($TrustedSSIDs -notcontains $currentSSID -and -not $isVPNConnected) {
             & $Connect
         }
-        # Wait 30 seconds then try again :)    
-        Start-Sleep -Seconds 30
+
+        # Wait however many milliseconds then try again :)    
+        Start-Sleep -Milliseconds 10000
+
      }
 } finally {
     # Will disconnect the VPN when the script is exited
-    Write-Host "Disconnecting VPN..."
-    & $Disconnect
-    
+    Disconnect-VPN
 }
